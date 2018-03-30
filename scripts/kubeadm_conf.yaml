@@ -1,0 +1,14 @@
+apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+controllerManagerExtraArgs:
+  pod-eviction-timeout: 10s
+  node-monitor-grace-period: 10s
+networking:
+  podSubnet: 10.244.0.0/16
+
+
+# mkdir -p $HOME/.kube
+# sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+# sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# sudo kubeadm join --token d58150.407d4111feb44781 192.168.7.220:6443 --discovery-token-ca-cert-hash sha256:c990004cc7caed4483efc07d97325fc8720f0237a4f070ca731a7792b176a44a
