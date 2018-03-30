@@ -1,7 +1,7 @@
 
 # k8s-pi-project
 
-Install kubernetes on raspberry Pi 
+Install kubernetes on a 6 raspberry Pi cluster
 
 ## bootstrap on each Raspberry PI
 ```sh
