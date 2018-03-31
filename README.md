@@ -11,7 +11,7 @@ Install kubernetes on a 6 raspberry Pi cluster with flannel network
 ssh-copy-id pi@raspberrypi.local
 ssh pi@raspberrypi.local
 sudo apt update
-sudo apt -qy install vim curl apt-transport-https ca-certificates curl
+sudo apt -qy install vim curl apt-transport-https ca-certificates curl git
 ```
 ### raspi-config
 ```sh
@@ -114,10 +114,12 @@ sudo apt-mark hold kubeadm
 # install and configure golang 1.9
 wget https://storage.googleapis.com/golang/go1.9.linux-armv6l.tar.gz
 sudo tar -C /usr/local -xzf go1.9.linux-armv6l.tar.gz
-echo "
+echo '
 export GOPATH=$HOME/go
 export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
-" | tee -a  $HOME/.bashrc  $HOME/.profile
+'| tee -a  $HOME/.bashrc  $HOME/.profile
+go get github.com/kubernetes-incubator/cri-tools/cmd/crictl
+sudo ln -s /home/pi/go/bin/crictl  /usr/local/bin/
 
 # active kernel settings
 sudo reboot
@@ -138,14 +140,18 @@ sudo reboot
 ssh pi@master1
 
 # deploy master
-
 echo "apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
 controllerManagerExtraArgs:
   pod-eviction-timeout: 10s
   node-monitor-grace-period: 10s" | tee $HOME/kubeadm.yaml
 
-sudo kubeadm --config kubeadm.yaml
+sudo kubeadm init --config kubeadm.yaml
+
+# install weaver net
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+kubectl get nodes # check if master ready
 
 # last step
 mkdir -p $HOME/.kube
